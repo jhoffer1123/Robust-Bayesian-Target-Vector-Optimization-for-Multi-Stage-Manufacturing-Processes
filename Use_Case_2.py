@@ -129,15 +129,18 @@ bound1 = Bounds(m_x1_train.min(axis = 0),m_x1_train.max(axis = 0))
 bound2 = Bounds(m_x2_train.min(axis = 0),m_x2_train.max(axis = 0))
 target22_ = np.array([target21,target22])
 #%% cascaded
-num_BO = 4
+num_BO = None
 
-m_model2 = GaussianProcessRegressor(kernel = Matern())
-sig_model2 = GaussianProcessRegressor(kernel = Matern())
-m_model1 = GaussianProcessRegressor(kernel = Matern())
+kernel_m2 = None
+m_model2 = GaussianProcessRegressor(kernel = kernel_m2)
+kernel_sig2 = None
+sig_model2 = GaussianProcessRegressor(kernel = kernel_sig2)
+kernel_m2 = None
+m_model1 = GaussianProcessRegressor(kernel = kernel_m2)
 
 
-xi = .05
-num_MC = 10
+xi = None
+num_MC = None
 E_minss = []
 robust_cascaded = BO_robust_cascaded_L2_EI(num_BO, sig, m_x2_train, sig_y1_train, m_y2_train, sig_y2_train, m_model2, sig_model2, target22_, xi, num_MC, bound1, 
                           bound2, m_x1_train, m_y1_train, m_model1, None,
@@ -145,7 +148,8 @@ robust_cascaded = BO_robust_cascaded_L2_EI(num_BO, sig, m_x2_train, sig_y1_train
 
 #% joint
 
-m_model = GaussianProcessRegressor(kernel = Matern())
+kernel_m = None
+m_model = GaussianProcessRegressor(kernel = kernel_m)
 m_x1_train = np.concatenate((x11_init, x12_init), axis = 1)
 m_x_train = np.concatenate((m_x1_train, x21_init), axis = 1)
 m_y_train = m_y2_train

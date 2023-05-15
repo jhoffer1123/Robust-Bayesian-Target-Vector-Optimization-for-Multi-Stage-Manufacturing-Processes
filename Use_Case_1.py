@@ -95,15 +95,15 @@ ax2.set_ylabel(r'$E,~ squared-error$', fontsize = fontsize)
 alpha = None
 num_it = None
 kernel_robust = None
-m_model_robust = None
-sig_model_robust = None
+m_model_robust = GaussianProcessRegressor(kernel = kernel_robust)
+
 kernel_nonrobust = None
-m_model_nonrobust = None
-sig_model_nonrobust = None
+m_model_nonrobust = GaussianProcessRegressor(kernel = kernel_nonrobust)
+
 xi = None
 
-robust_L2_EI_results = BO_loop(bounds, m_x_train, sig_x_train, m_y_train, sig_y_train, m_model_robust, sig_model_robust, target, xi, robust_L2_EI, num_it, num_MC = 20)
-L2_EI_results = BO_loop(bounds, m_x_train, sig_x_train, m_y_train, sig_y_train, m_model_nonrobust, sig_model_nonrobust, target, xi, L2_EI, num_it, num_MC = 0, robust = False)
+robust_L2_EI_results = BO_loop(bounds, m_x_train, sig_x_train, m_y_train, sig_y_train, m_model_robust, target, xi, robust_L2_EI, num_it, num_MC = None)
+L2_EI_results = BO_loop(bounds, m_x_train, sig_x_train, m_y_train, sig_y_train, m_model_nonrobust, target, xi, L2_EI, num_it, num_MC = 0, robust = False)
 
 #%% Visualization
 
