@@ -9,20 +9,11 @@ Created on Mon May 15 11:43:59 2023
 import warnings
 warnings.filterwarnings('ignore')
 
-#import math
-#import torch
-#import gpytorch
 import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import cm
 import numpy as np
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import MinMaxScaler
-#from autograd.scipy.special import erf
 
-from scipy.optimize import direct, Bounds
-
-#from acquisition_functions import robust_L2_EI_MT
 x11 = np.array([-1,-3,-4])
 x12 = np.array([1,3,4])
 z1 = np.array([-5,-4,-1])
@@ -44,7 +35,6 @@ def plotter(x11, x12, z1, x21, x22, z21, z22, sig, target11, target12, target21,
     def proc1(x11, x12):
     
         X11, X12= np.meshgrid(x11, x12)
-        #Z1 = X11 * X12**2
         X12[X12<0] = 0
         Z1 = np.log(X12)*X11
         return Z1
@@ -78,11 +68,9 @@ def plotter(x11, x12, z1, x21, x22, z21, z22, sig, target11, target12, target21,
         fs = []
         for i in range(0,num_carlo):
             np.random.seed(i)
-            # x12 = x12.reshape(-1,1)+ np.random.normal(0, sig, len(x12)).reshape(-1,1)
             x12 = x12.reshape(-1,1)
             x11 = x11.reshape(-1,1)+ np.random.normal(0, sig, len(x11)).reshape(-1,1)
-    
-            # Z1 = proc1_(x11, x12)
+
             Z1 = proc1(x11, x12)
             fs.append(Z1)
     
@@ -98,11 +86,9 @@ def plotter(x11, x12, z1, x21, x22, z21, z22, sig, target11, target12, target21,
         f2s = []
         for i in range(0,num_carlo):
             np.random.seed(i)
-            #x22 = x22.reshape(-1,1)+ np.random.normal(0, sig, len(x22)).reshape(-1,1)
             x22 = x22.reshape(-1,1)
             x21 = x21.reshape(-1,1)+ np.random.normal(0, sig, len(x21)).reshape(-1,1)
             
-            # Z21, Z22 = proc2_(x21.reshape(-1,1), x22)
             Z21, Z22 = proc2(x21.reshape(-1,1), x22)
     
             f1s.append(Z21)
@@ -124,51 +110,38 @@ def plotter(x11, x12, z1, x21, x22, z21, z22, sig, target11, target12, target21,
     X11_plot, X12_plot = np.meshgrid(x11_plot, x12_plot)
     
     
-    target_out = proc1(target11,target12) # should be -7
+    target_out = proc1(target11,target12) 
     
     
     #%%
-    
-    #print(Z1_plot_std)
-    # print(Z1_plot_std.min())
-    # print(Z1_plot_std.max())
+
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     surf1 = ax.plot_surface(X11_plot, X12_plot, Z1_plot
                  ,cmap='viridis' 
                  ,facecolors = cm.jet(MinMaxScaler().fit_transform(Z1_plot_std))
-                # ,facecolors = cm.viridis(Z1_plot_std)
-                 #, label = 'y_11'
                  ,alpha = .2
-                  #, vmin = 0
-                  #, vmax = 0.35
-
                  )
-    
-    #ax.scatter(target11, target12, target_out, s = 10, color = 'red')
+
     ax.scatter(x11, x12, z1, s = 10, color = 'black')
     
     ax.set_xlabel(r'$x^{(1)}_{1}$')
     ax.set_ylabel(r'$x^{(1)}_{2}$')
     ax.set_zlabel(r'$y^{(1)}$')
     ax.view_init(elev=10., azim=100)
-    #fig.clim(-1,1)
-    #fig.colorbar(surf1, shrink=0.5, aspect=5)
     norm = matplotlib.colors.Normalize(vmin=0, vmax=0.35)
     m = cm.ScalarMappable(cmap=cm.jet, norm = norm)
     m.set_array(Z1_plot_std)
     fig.colorbar(m
-                 #, orientation = 'horizontal'
                  ,location = 'left'
                  , shrink = 0.5)
-    #plt.clim(0,5)
     plt.savefig(path+'_proc_11.pdf', bbox_inches='tight')
      
     
     #%% looking for a target
     
-    x21_target = -1
-    x22_target = -7
+    x21_target = None
+    x22_target = None
     
     target1, target2 = proc2_(x21_target,x22_target)
     
@@ -187,11 +160,7 @@ def plotter(x11, x12, z1, x21, x22, z21, z22, sig, target11, target12, target21,
     ax = fig.gca(projection='3d')
     #ax = fig.add_subplot(projection='3d')
     surf21 = ax.plot_surface(X21_plot, X22_plot, Z21_plot
-                 #,cmap='viridis' 
-                 #,facecolors=fcolors, vmin=minn, vmax=maxx, shade=False
                  ,facecolors = cm.jet(MinMaxScaler().fit_transform(Z21_plot_std))
-                 #,facecolors = cm.viridis(Z21_plot_std)
-                 #, label = 'y_11'
                  , alpha = .2
                  )
     
@@ -206,10 +175,8 @@ def plotter(x11, x12, z1, x21, x22, z21, z22, sig, target11, target12, target21,
     m = cm.ScalarMappable(cmap=cm.jet, norm = norm)
     m.set_array(Z21_plot_std)
     fig.colorbar(m
-                 #, orientation = 'horizontal'
                  ,location = 'left'
                  , shrink = 0.5)
-    # plt.show()
     plt.savefig(path+'_proc_21.pdf', bbox_inches='tight')
     #%%
     
@@ -218,8 +185,6 @@ def plotter(x11, x12, z1, x21, x22, z21, z22, sig, target11, target12, target21,
     surf22 = ax.plot_surface(X21_plot, X22_plot, Z22_plot
                  ,cmap='viridis' 
                  ,facecolors = cm.jet(MinMaxScaler().fit_transform(Z22_plot_std))
-                 #,facecolors = cm.viridis(Z22_plot_std)
-                 #, label = 'y_11'
                  , alpha = .2
                  )
     
@@ -234,24 +199,10 @@ def plotter(x11, x12, z1, x21, x22, z21, z22, sig, target11, target12, target21,
     m = cm.ScalarMappable(cmap=cm.jet, norm = norm)
     m.set_array(Z22_plot_std)
     fig.colorbar(m
-                 #, orientation = 'horizontal'
                  ,location = 'left'
                  , shrink = 0.5)
     plt.savefig(path+'_proc_22.pdf', bbox_inches='tight')
     
-#%%
-# target11 = -4.2277
-# target12 = 5.2373
-
-# target21 = -1
-# target22 = -7
-
-# sig = 0.01
-
-# path = r'C:\Users\U861741\OneDrive - voestalpine\PHD_TUGRAZ\cascaded_multitask_robust_BO\PAPER\figures'
-
-# plotter(x11, x12, z1, x21, x22, z21, z22, sig, target11, target12, target21, target22, path)
-
 
 
 
