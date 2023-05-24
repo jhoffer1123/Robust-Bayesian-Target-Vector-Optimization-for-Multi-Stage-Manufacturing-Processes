@@ -62,8 +62,7 @@ def robust_L2_EI(m_x, sig_xp, m_x_train, sig_x_train, m_y_train, m_model, sig_mo
     e_min = ((E_min - xi - sig_al**2) / (sig_ep**2)).min()
     #%%
     improvement = e_min*ncx2.cdf(e_min, k, nc) - ncx2.cdf(e_min, k+2, nc) + nc* ncx2.cdf(e_min, k+4, nc)
-    if improvement.mean()<0:    
-        print (improvement.mean())
+
     return -improvement.mean()
 
 
@@ -87,8 +86,7 @@ def L2_EI(m_x, sig_xp, m_x_train, sig_x_train, m_y_train, m_model, sig_model, ta
     e_min = ((E_min - xi ) / (sig_ep**2)).min()
     #%% improvement
     improvement = e_min*ncx2.cdf(e_min, k, nc) - ncx2.cdf(e_min, k+2, nc) + nc* ncx2.cdf(e_min, k+4, nc)
-    if improvement.mean()<0:    
-        print (improvement.mean())
+
     return -improvement.mean()
 
 
