@@ -30,16 +30,8 @@ def BO_loop(bounds, m_x_train, sig_x_train, m_y_train, sig_y_train, m_model, sig
         m_y_train = np.concatenate((m_y_train, m_y_next))
         sig_y_train = np.concatenate((sig_y_train, sig_y_next))
         E_min = ((m_y_train-target)**2 + sig_y_train**2).mean(axis = 1)
-        E_min_arg = E_min
         
-        # if robust == True:
-        #     E_min_arg = E_min
-        # if robust == False:
-        #     E_min_arg = ((m_y_train-target)**2).mean(axis = 1)
-
-        
-        E_argmin = E_min_arg.argmin()
-        print(E_argmin)
+        E_argmin = E_min.argmin()
         
         m_x_mins.append(m_x_train[E_argmin])
         m_y_mins.append(m_y_train[E_argmin])
